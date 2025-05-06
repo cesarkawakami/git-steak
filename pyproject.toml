@@ -1,0 +1,16 @@
+[project]
+name = "git-steak"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Cesar Kawakami", email = "me@crkw.io" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "ruff>=0.11.8",
+    "typer>=0.15.3",
+]
+
+[project.scripts]
+git-steak = "git_steak:main"
