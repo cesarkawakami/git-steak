@@ -22,7 +22,7 @@ class GitCommitInfo:
 
 
 def _git_first_commit_info_between_two_revs(
-    before_rev: str, afte_rev: str
+    before_rev: str, after_rev: str
 ) -> GitCommitInfo:
     result = subprocess.run(
         [
@@ -31,7 +31,7 @@ def _git_first_commit_info_between_two_revs(
             "--pretty=format:%s%n%b",
             "-n",
             "1",
-            f"{before_rev}..{afte_rev}",
+            f"{before_rev}..{after_rev}",
         ],
         capture_output=True,
         encoding="utf-8",
@@ -39,7 +39,10 @@ def _git_first_commit_info_between_two_revs(
     )
     output = result.stdout.strip()
     commit_title, _, commit_body = output.partition("\n")
-    return GitCommitInfo(commit_title=commit_title, commit_body=commit_body)
+    return GitCommitInfo(
+        commit_title=commit_title,
+        commit_body=commit_body.strip() + "\n",
+    )
 
 
 def _gh_pr_exists(branch_name: str) -> bool:
