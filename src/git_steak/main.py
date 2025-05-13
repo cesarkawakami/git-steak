@@ -38,9 +38,7 @@ def _git_first_commit_info_between_two_revs(
         check=True,
     )
     output = result.stdout.strip()
-    parts = output.split("\n", 1)  # You can use .partition() to make this cleaner ai!
-    commit_title = parts[0]
-    commit_body = parts[1] if len(parts) > 1 else ""
+    commit_title, _, commit_body = output.partition("\n")
     return GitCommitInfo(commit_title=commit_title, commit_body=commit_body)
 
 
