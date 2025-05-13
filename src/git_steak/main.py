@@ -94,14 +94,11 @@ def _run_pull_request_workflow(
     wf: PullRequestWorkflow,
     stack: list[PullRequestWorkflow],
 ) -> None:
-    # head_rev is already the final one, no need to construct head_branch_name. AI!
-    # Construct the head string in the format owner:branch
-    head_branch_name = wf.head_rev
-    if ":" not in head_branch_name: # Ensure owner prefix if not already there
-        head_branch_name = f"{gh_repo.owner.login}:{wf.head_rev}"
-
+    # wf.head_rev is already in the format owner:branch_name if it's a fork,
+    # or just branch_name if it's from the same repository.
+    # The gh_repo.get_pulls method handles both cases correctly when head is specified.
     existing_pulls = gh_repo.get_pulls(
-        state="open", head=head_branch_name, base=wf.base_rev
+        state="open", head=wf.head_rev, base=wf.base_rev
     )
 
     pr_to_update_or_create = None
