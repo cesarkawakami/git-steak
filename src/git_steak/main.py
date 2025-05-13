@@ -24,8 +24,24 @@ class GitCommitInfo:
 def _git_first_commit_info_between_two_revs(
     before_rev: str, afte_rev: str
 ) -> GitCommitInfo:
-    # This should grab the first commit between two revs and return its title and body. AI!
-
+    result = subprocess.run(
+        [
+            "git",
+            "log",
+            "--pretty=format:%s%n%b",
+            "-n",
+            "1",
+            f"{before_rev}..{afte_rev}",
+        ],
+        capture_output=True,
+        encoding="utf-8",
+        check=True,
+    )
+    output = result.stdout.strip()
+    parts = output.split("\n", 1)
+    commit_title = parts[0]
+    commit_body = parts[1] if len(parts) > 1 else ""
+    return GitCommitInfo(commit_title=commit_title, commit_body=commit_body)
 
 
 def _gh_pr_exists(branch_name: str) -> bool:
