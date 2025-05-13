@@ -45,7 +45,14 @@ def _git_first_commit_info_between_two_revs(
     )
 
 
-# Create a _gh_get_token function to get the token from the github CLI. AI!
+def _gh_get_token() -> str:
+    result = subprocess.run(
+        ["gh", "auth", "token"],
+        capture_output=True,
+        encoding="utf-8",
+        check=True,
+    )
+    return result.stdout.strip()
 
 
 def _gh_pr_exists(branch_name: str) -> bool:
