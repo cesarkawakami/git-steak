@@ -45,6 +45,11 @@ def _git_first_commit_info_between_two_revs(
     )
 
 
+def _git_get_github_repo_name() -> str:
+    # Guess the github repo name from the current git repo. ai!
+    raise NotImplementedError("Not implemented yet")
+
+
 def _gh_get_token() -> str:
     result = subprocess.run(
         ["gh", "auth", "token"],
