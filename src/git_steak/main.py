@@ -1,5 +1,8 @@
+from ast import Not
 from dataclasses import dataclass
 import subprocess
+from github import Github
+import github
 import typer
 
 app = typer.Typer()
@@ -22,7 +25,7 @@ class GitCommitInfo:
 
 
 def _git_first_commit_info_between_two_revs(
-    before_rev: str, after_rev: str
+    base_rev: str, head_rev: str
 ) -> GitCommitInfo:
     result = subprocess.run(
         [
@@ -31,7 +34,7 @@ def _git_first_commit_info_between_two_revs(
             "--pretty=format:%s%n%b",
             "-n",
             "1",
-            f"{before_rev}..{after_rev}",
+            f"{base_rev}..{head_rev}",
         ],
         capture_output=True,
         encoding="utf-8",
@@ -75,9 +78,26 @@ def _gh_get_token() -> str:
     return result.stdout.strip()
 
 
+@dataclass
+class PullRequestWorkflow:
+    index: int
+    base_rev: str
+    head_rev: str
+    first_commit: GitCommitInfo
+    gh_pr_number: int | None = None
+
+
+def _run_pull_request_workflow(wf: PullRequestWorkflow) -> None:
+    raise NotImplementedError()
+
+
 @app.command()
 def submit() -> None:
     stack_branches = _git_stack_branches()
+
+    gh = Github(auth=github.Auth.Token(_gh_get_token()))
+    gh_repo = gh.get_repo(_git_get_github_repo_name())
+    gh_repo.get_pulls(head=)
 
 
 def main():
