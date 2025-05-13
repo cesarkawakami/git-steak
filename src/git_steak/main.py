@@ -46,8 +46,23 @@ def _git_first_commit_info_between_two_revs(
 
 
 def _git_get_github_repo_name() -> str:
-    # Guess the github repo name from the current git repo. ai!
-    raise NotImplementedError("Not implemented yet")
+    result = subprocess.run(
+        ["git", "remote", "get-url", "origin"],
+        capture_output=True,
+        encoding="utf-8",
+        check=True,
+    )
+    url = result.stdout.strip()
+    if url.startswith("git@github.com:"):
+        repo_name = url.removeprefix("git@github.com:")
+    elif url.startswith("https://github.com/"):
+        repo_name = url.removeprefix("https://github.com/")
+    else:
+        raise ValueError(f"Unsupported git remote URL format: {url}")
+
+    if repo_name.endswith(".git"):
+        repo_name = repo_name.removesuffix(".git")
+    return repo_name
 
 
 def _gh_get_token() -> str:
