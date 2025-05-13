@@ -15,3 +15,5 @@ dependencies = [
 
 [project.scripts]
 git-steak = "git_steak:main"
+
+# Add a [build-system] block here. AI!
