@@ -16,4 +16,7 @@ dependencies = [
 [project.scripts]
 git-steak = "git_steak:main"
 
-# Add a [build-system] block here. AI!
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+backend-path = "."
