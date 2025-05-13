@@ -90,11 +90,54 @@ class PullRequestWorkflow:
 
 def _run_pull_request_workflow(
     progress: rich.progress.Progress,
+    gh_repo: github.Repository,
     wf: PullRequestWorkflow,
     stack: list[PullRequestWorkflow],
 ) -> None:
-    # This should check if the PR doesn't already exist, if it doesn't create it, in either case it should make sure the PR's title and description match wf.first_commit.
-    # It should also check that base_ref matches the one on the PR. wf.gh_pr_number should be updated correspondingly. AI!
+    # Construct the head string in the format owner:branch
+    head_branch_name = wf.head_rev
+    if ":" not in head_branch_name: # Ensure owner prefix if not already there
+        head_branch_name = f"{gh_repo.owner.login}:{wf.head_rev}"
+
+    existing_pulls = gh_repo.get_pulls(
+        state="open", head=head_branch_name, base=wf.base_rev
+    )
+
+    pr_to_update_or_create = None
+    if existing_pulls.totalCount > 0:
+        pr_to_update_or_create = existing_pulls[0]
+        wf.gh_pr_number = pr_to_update_or_create.number
+
+        needs_update = False
+        update_args = {}
+        if pr_to_update_or_create.title != wf.first_commit.commit_title:
+            update_args["title"] = wf.first_commit.commit_title
+            needs_update = True
+        if pr_to_update_or_create.body != wf.first_commit.commit_body:
+            update_args["body"] = wf.first_commit.commit_body
+            needs_update = True
+        
+        # Base is already confirmed by the get_pulls query, but if we wanted to allow changing it:
+        # if pr_to_update_or_create.base.ref != wf.base_rev:
+        #     update_args["base"] = wf.base_rev
+        #     needs_update = True
+
+        if needs_update:
+            pr_to_update_or_create.edit(**update_args)
+            rich.print(f"Updated PR #{pr_to_update_or_create.number}: {pr_to_update_or_create.html_url}")
+        else:
+            rich.print(f"PR #{pr_to_update_or_create.number} is already up-to-date: {pr_to_update_or_create.html_url}")
+
+
+    else:
+        pr_to_update_or_create = gh_repo.create_pull(
+            title=wf.first_commit.commit_title,
+            body=wf.first_commit.commit_body,
+            head=wf.head_rev,  # For create_pull, just branch name is fine
+            base=wf.base_rev,
+        )
+        wf.gh_pr_number = pr_to_update_or_create.number
+        rich.print(f"Created PR #{pr_to_update_or_create.number}: {pr_to_update_or_create.html_url}")
 
 
 @app.command()
