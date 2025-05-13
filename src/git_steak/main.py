@@ -94,6 +94,7 @@ def _run_pull_request_workflow(
     wf: PullRequestWorkflow,
     stack: list[PullRequestWorkflow],
 ) -> None:
+    # head_rev is already the final one, no need to construct head_branch_name. AI!
     # Construct the head string in the format owner:branch
     head_branch_name = wf.head_rev
     if ":" not in head_branch_name: # Ensure owner prefix if not already there
@@ -116,7 +117,7 @@ def _run_pull_request_workflow(
         if pr_to_update_or_create.body != wf.first_commit.commit_body:
             update_args["body"] = wf.first_commit.commit_body
             needs_update = True
-        
+
         # Base is already confirmed by the get_pulls query, but if we wanted to allow changing it:
         # if pr_to_update_or_create.base.ref != wf.base_rev:
         #     update_args["base"] = wf.base_rev
