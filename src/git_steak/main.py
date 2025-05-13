@@ -55,45 +55,6 @@ def _gh_get_token() -> str:
     return result.stdout.strip()
 
 
-def _gh_pr_exists(branch_name: str) -> bool:
-    result = subprocess.run(
-        ["gh", "pr", "view", branch_name],
-        capture_output=True,
-        encoding="utf-8",
-    )
-    return result.returncode == 0
-
-
-def _gh_pr_create(head_branch_name: str, base_branch_name: str) -> None:
-    subprocess.run(
-        [
-            "gh",
-            "pr",
-            "create",
-            "--base",
-            base_branch_name,
-            "--head",
-            head_branch_name,
-            "--fill-first",
-        ],
-        check=True,
-    )
-
-
-def _gh_pr_edit(head_branch_name: str, base_branch_name: str) -> None:
-    subprocess.run(
-        [
-            "gh",
-            "pr",
-            "edit",
-            "--base",
-            base_branch_name,
-            head_branch_name,
-        ],
-        check=True,
-    )
-
-
 @app.command()
 def submit() -> None:
     stack_branches = _git_stack_branches()
