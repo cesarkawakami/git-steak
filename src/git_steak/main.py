@@ -90,11 +90,11 @@ class PullRequestWorkflow:
 
 def _run_pull_request_workflow(
     progress: rich.progress.Progress,
-    gh_repo: github.Repository,
+    gh: Github,
     wf: PullRequestWorkflow,
     stack: list[PullRequestWorkflow],
 ) -> None:
-    # Change to receive an instance of Github and get the repo through _git_get_github_repo_name. AI!
+    gh_repo = gh.get_repo(_git_get_github_repo_name())
     existing_pulls = gh_repo.get_pulls(head=wf.head_rev, state="open")
 
     pr_to_update_or_create = None
