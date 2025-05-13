@@ -3,6 +3,8 @@ from dataclasses import dataclass
 import subprocess
 from github import Github
 import github
+import rich
+import rich.progress
 import typer
 
 app = typer.Typer()
@@ -80,15 +82,19 @@ def _gh_get_token() -> str:
 
 @dataclass
 class PullRequestWorkflow:
-    index: int
     base_rev: str
     head_rev: str
     first_commit: GitCommitInfo
     gh_pr_number: int | None = None
 
 
-def _run_pull_request_workflow(wf: PullRequestWorkflow) -> None:
-    raise NotImplementedError()
+def _run_pull_request_workflow(
+    progress: rich.progress.Progress,
+    wf: PullRequestWorkflow,
+    stack: list[PullRequestWorkflow],
+) -> None:
+    # This should check if the PR doesn't already exist, if it doesn't create it, in either case it should make sure the PR's title and description match wf.first_commit.
+    # It should also check that base_ref matches the one on the PR. wf.gh_pr_number should be updated correspondingly. AI!
 
 
 @app.command()
@@ -97,7 +103,7 @@ def submit() -> None:
 
     gh = Github(auth=github.Auth.Token(_gh_get_token()))
     gh_repo = gh.get_repo(_git_get_github_repo_name())
-    gh_repo.get_pulls(head=)
+    # gh_repo.get_pulls(head=)
 
 
 def main():
