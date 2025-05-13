@@ -17,6 +17,7 @@ dependencies = [
 git-steak = "git_steak:main"
 
 [build-system]
+# Maybe use hatchling instead? AI!
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 backend-path = "."
