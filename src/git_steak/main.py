@@ -94,12 +94,8 @@ def _run_pull_request_workflow(
     wf: PullRequestWorkflow,
     stack: list[PullRequestWorkflow],
 ) -> None:
-    # wf.head_rev is already in the format owner:branch_name if it's a fork,
-    # or just branch_name if it's from the same repository.
-    # The gh_repo.get_pulls method handles both cases correctly when head is specified.
-    existing_pulls = gh_repo.get_pulls(
-        state="open", head=wf.head_rev, base=wf.base_rev
-    )
+    # Change to receive an instance of Github and get the repo through _git_get_github_repo_name. AI!
+    existing_pulls = gh_repo.get_pulls(head=wf.head_rev, state="open")
 
     pr_to_update_or_create = None
     if existing_pulls.totalCount > 0:
