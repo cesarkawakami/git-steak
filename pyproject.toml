@@ -1,0 +1,27 @@
+[project]
+name = "git-steak"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Cesar Kawakami", email = "me@crkw.io" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "loguru>=0.7.3",
+    "pygithub>=2.6.1",
+    "pyright>=1.1.400",
+    "rich>=14.0.0",
+    "ruff>=0.11.8",
+    "typer>=0.15.3",
+]
+
+[project.scripts]
+git-steak = "git_steak.main:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/git_steak"]
