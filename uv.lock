@@ -130,6 +130,7 @@ source = { editable = "." }
 dependencies = [
     { name = "pygithub" },
     { name = "pyright" },
+    { name = "rich" },
     { name = "ruff" },
     { name = "typer" },
 ]
@@ -138,6 +139,7 @@ dependencies = [
 requires-dist = [
     { name = "pygithub", specifier = ">=2.6.1" },
     { name = "pyright", specifier = ">=1.1.400" },
+    { name = "rich", specifier = ">=14.0.0" },
     { name = "ruff", specifier = ">=0.11.8" },
     { name = "typer", specifier = ">=0.15.3" },
 ]

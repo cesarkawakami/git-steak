@@ -95,11 +95,21 @@ def _run_pull_request_workflow(
     stack: list[PullRequestWorkflow],
 ) -> None:
     gh_repo = gh.get_repo(_git_get_github_repo_name())
-    existing_pulls = gh_repo.get_pulls(head=wf.head_rev, state="open")
+    existing_prs = gh_repo.get_pulls(head=wf.head_rev, state="open")
+
+    if not existing_prs:
+        pr_to_update_or_create = gh_repo.create_pull(
+            title=wf.first_commit.commit_title,
+            body=wf.first_commit.commit_body,
+            head=wf.head_rev,
+            base=wf.base_rev,
+        )
+    else:
+        pr = existing_prs[0]
 
     pr_to_update_or_create = None
-    if existing_pulls.totalCount > 0:
-        pr_to_update_or_create = existing_pulls[0]
+    if existing_prs.totalCount > 0:
+        pr_to_update_or_create = existing_prs[0]
         wf.gh_pr_number = pr_to_update_or_create.number
 
         needs_update = False
