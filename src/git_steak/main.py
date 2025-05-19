@@ -6,10 +6,13 @@ from dataclasses import dataclass
 from typing import cast
 
 import github
+import rich
+import rich.table
 import typer
 from github import Github
 from github.PullRequest import PullRequest
 from loguru import logger
+from rich import print
 
 from git_steak.logging import setup_loguru_logging_interceptor
 
@@ -226,7 +229,7 @@ def submit() -> None:
 
     gh = Github(auth=github.Auth.Token(_gh_get_token()))
     workflows = _generate_workflows(stack_branches)
-    with ThreadPoolExecutor() as executor:
+    with ThreadPoolExecutor(max_workers=4) as executor:
         for _ in executor.map(
             _run_pull_request_workflow,
             [gh] * len(workflows),
@@ -243,9 +246,23 @@ def submit() -> None:
                 [workflows] * len(workflows),
             ):
                 pass
+
+    table = rich.table.Table(highlight=True)
+    table.add_column("Index")
+    table.add_column("Branch")
+    table.add_column("Title")
+    table.add_column("URL")
+
     for wf in workflows:
-        if wf.gh_pr:
-            logger.info(f"PR: {wf.gh_pr.html_url} for {wf.head_rev}")
+        wf_branch = wf.head_rev
+        table.add_row(
+            f"{wf.index}/{len(workflows)}",
+            wf_branch,
+            wf.first_commit.commit_title,
+            wf.gh_pr.html_url if wf.gh_pr else None,
+        )
+
+    print(table)
 
 
 def main():
