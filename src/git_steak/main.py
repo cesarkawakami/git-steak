@@ -21,7 +21,13 @@ app = typer.Typer()
 
 def _git_stack_branches() -> list[str]:
     result = subprocess.run(
-        ["git", "branchless", "query", "--branches", "main() | stack() & branches()"],
+        [
+            "git",
+            "branchless",
+            "query",
+            "--branches",
+            "main() | stack() & branches() & ancestors(HEAD)",
+        ],
         capture_output=True,
         encoding="utf-8",
         check=True,
