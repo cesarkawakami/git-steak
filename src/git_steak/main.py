@@ -112,10 +112,17 @@ def _git_get_github_repo_name() -> str:
         check=True,
     )
     url = result.stdout.strip()
-    if url.startswith("git@github.com:"):
-        repo_name = url.removeprefix("git@github.com:")
-    elif url.startswith("https://github.com/"):
-        repo_name = url.removeprefix("https://github.com/")
+
+    # Extract org/repo from URL
+    if "://" in url:
+        # HTTP(S) format: extract after third slash
+        parts = url.split("/", 3)
+        if len(parts) < 4:
+            raise ValueError(f"Unsupported git remote URL format: {url}")
+        repo_name = parts[3]
+    elif ":" in url:
+        # SSH format: extract after first colon
+        repo_name = url.split(":", 1)[1]
     else:
         raise ValueError(f"Unsupported git remote URL format: {url}")
 
